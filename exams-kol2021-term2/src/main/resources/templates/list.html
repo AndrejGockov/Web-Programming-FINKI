@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>WP Exam</title>
+</head>
+<body>
+
+<div>
+    <!-- The form below should invoke the method MenuController.showMenus -->
+    <form id="filter-form">
+
+        <label for="nameSearch">Restaurant Name</label>
+        <input id="nameSearch" type="text" name="nameSearch"/>
+        <select id="menuType" name="menuType">
+            <option value="">
+                All
+            </option>
+            <!-- For each menu type you should have one <option> like below  -->
+            <option th:each="type : ${menuTypes}"
+                    th:text="${type}"
+                    th:value="${type}">
+                [menuType]
+            </option>
+        </select>
+        <button id="filter" type="submit">Filter</button>
+    </form>
+    <div>
+        <!-- MenuController.showAdd -->
+        <a class="add-item"
+           th:href="@{'/menu/add'}"
+           sec:authorize="hasRole('ADMIN')">
+            Add new menu
+        </a>
+    </div>
+    <table>
+        <tr>
+            <th>Restaurant name</th>
+            <th>Menu Type</th>
+            <th>Menu Items</th>
+            <th>Creator</th>
+            <th>Actions</th>
+        </tr>
+        <!-- For each menu you should have one <tr> like below -->
+        <tr class="item"
+            th:each="menu : ${menus}">
+
+            <td th:text="${menu.restaurantName}">[menu.restaurantName]</td>
+            <td th:text="${menu.menuType}">[menu.menuType]</td>
+            <td>
+                <ul th:each="item : ${menu.menuItems}">
+                    <!-- For each menu's item you should display one <li> element like the one below -->
+                    <li th:text="${item.name}">[item.name]</li>
+                </ul>
+            </td>
+            <td>[menu.creator]</td>
+            <td>
+                <!-- MenuController.delete -->
+                <form th:method="post"
+                      th:action="@{'/menu/' + ${menu.id} + '/delete'}"
+                      sec:authorize="hasRole('ADMIN')">
+                    <button type="submit" class="delete-item">Delete</button>
+                </form>
+                <!-- MenuController.showEdit -->
+                <a th:href="@{'/menu/' + ${menu.id} + '/edit'}"
+                   sec:authorize="hasRole('ADMIN')"
+                   class="edit-item">
+                    Edit
+                </a>
+            </td>
+        </tr>
+    </table>
+
+</div>
+<div>
+    <ul id="nav">
+        <li><a href="/">Home</a></li>
+        <li><a href="/login">Login</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+</div>
+</body>
+</html>

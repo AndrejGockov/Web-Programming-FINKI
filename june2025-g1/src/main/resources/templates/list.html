@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Startup List</title>
+</head>
+<body>
+
+<div>
+    <!-- The form below should invoke the method StartupController.listAll -->
+    <form id="filter-form">
+        <label for="name">Startup Name</label>
+        <input id="name" type="text" name="name"/>
+
+        <label for="valuation">Valuation (in millions)</label>
+        <input id="valuation" type="number" name="valuation"/>
+
+        <label for="yearFounded">Year Founded</label>
+        <input id="yearFounded" type="number" min="2000" name="yearFounded"/>
+
+        <label for="industry">Industry</label>
+        <select id="industry" name="industry">
+            <option value="">All</option>
+            <!-- For each Industry you should have one <option> like below  -->
+            <option th:each="industry : ${industries}"
+                    th:text="${industry.name()}"
+                    th:value="${industry.name()}">[industry]</option>
+        </select>
+
+        <label for="founderId">Founder</label>
+        <select id="founderId" name="founderId">
+            <option value="">All</option>
+            <!-- For each founder you should have one <option> like below  -->
+            <option th:each="founder : ${founders}"
+                    th:text="${founder.name}"
+                    th:value="${founder.id}">[founder.name]</option>
+        </select>
+
+        <button id="filter" type="submit">Filter</button>
+    </form>
+
+    <div>
+        <!-- StartupController.showAdd -->
+        <a class="add-item" sec:authorize="hasRole('ADMIN')">Add new startup</a>
+    </div>
+
+    <table>
+        <tr>
+            <th>Startup Name</th>
+            <th>Valuation</th>
+            <th>Year Founded</th>
+            <th>Industry</th>
+            <th>Founder</th>
+            <th>Active/Deactivated</th>
+            <th>Actions</th>
+        </tr>
+        <!-- For each startup you should have one <tr> like below -->
+        <tr class="item" th:each="startup : ${startups}">
+            <td th:text="${startup.name}">[startup.name]</td>
+            <td th:text="${startup.valuation}">[startup.valuation]</td>
+            <td th:text="${startup.yearFounded}">[startup.yearFounded]</td>
+            <td th:text="${startup.industry}">[startup.industry]</td>
+            <td th:text="${startup.founder.name}">[startup.founder.name]</td>
+            <td th:text="${startup.active ? 'ACTIVE' : 'DEACTIVATED'}">[startup.active] -> ACTIVE/DEACTIVATED</td>
+            <td>
+                <!-- StartupController.edit -->
+                <a class="edit-item"
+                   th:href="@{'startups/edit/{id}' (id=${startup.id})}"
+                   sec:authorize="hasRole('ADMIN')">
+                    Edit
+                </a>
+
+                <!-- StartupController.delete -->
+                <form method="post"
+                      th:action="@{'/startups/delete/{id}' (id=${startup.id})}"
+                      sec:authorize="hasRole('ADMIN')">
+                    <button type="submit" class="delete-item">Delete</button>
+                </form>
+
+                <!-- StartupController.close -->
+                <form method="post"
+                      th:action="@{'/startups/deactivate/{id}' (id=${startup.id})}"
+                      sec:authorize="hasRole('ADMIN')"
+                      th:if="${startup.active == true}">
+                    <button type="submit" class="close-item">Deactivate</button>
+                </form>
+
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div>
+    <ul id="nav">
+        <li><a href="/">Home</a></li>
+        <li><a href="/login">Login</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+</div>
+
+</body>
+</html>

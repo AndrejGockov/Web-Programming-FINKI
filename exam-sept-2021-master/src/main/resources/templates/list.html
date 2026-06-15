@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>WP Exam</title>
+</head>
+<body>
+
+<div>
+    <!-- The form below should invoke the method NewsController.showNews -->
+    <form id="filter-form">
+        <label for="price">Price</label>
+        <input id="price" type="number" name="price" step="any"/>
+        <label for="type">Type</label>
+        <select id="type" name="type">
+            <option value="">All</option>
+            <!-- For each type you should have one <option> like below  -->
+            <option th:each="type : ${newsTypes}"
+                    th:text="${type}"
+                    th:value="${type}">
+                [type]
+            </option>
+        </select>
+        <button id="filter" type="submit">Filter</button>
+    </form>
+    <div>
+        <!-- NewsController.showAdd -->
+            <a class="add-item"
+               th:href="@{'/news/add'}"
+               sec:authorize="hasRole('ADMIN')">
+                Add news
+            </a>
+    </div>
+    <table>
+        <tr>
+            <th>Match name</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Type</th>
+            <th>Category</th>
+            <th>Likes</th>
+            <th>Actions</th>
+        </tr>
+        <!-- For each news you should have one <tr> like below -->
+        <tr class="item" th:each="newsPiece : ${news}">
+            <td th:text="${newsPiece.name}">[news.name]</td>
+            <td th:text="${newsPiece.description}">[news.description]</td>
+            <td th:text="${newsPiece.price}">[news.price]</td>
+            <td th:text="${newsPiece.type}">[news.type]</td>
+            <td th:text="${newsPiece.category}">[news.category]</td>
+            <td th:text="${newsPiece.likes}"> [news.likes]</td>
+            <td>
+                    <!-- NewsController.delete -->
+                    <form th:method="post"
+                          th:action="@{'/news/' + ${newsPiece.id} + '/delete'}"
+                          sec:authorize="hasRole('ADMIN')">
+                        <button type="submit" class="delete-item">Delete</button>
+                    </form>
+                    <!-- NewsController.showEdit -->
+                    <a class="edit-item"
+                       th:href="@{'/news/' + ${newsPiece.id} + '/edit'}"
+                       sec:authorize="hasRole('ADMIN')">
+                        Edit
+                    </a>
+                    <!-- NewsController.follow -->
+                    <form th:method="post"
+                          th:action="@{'/news/' + ${newsPiece.id} + '/like'}"
+                          sec:authorize="hasRole('USER')">
+                        <button type="submit" class="like-item">Like</button>
+                    </form>
+            </td>
+        </tr>
+    </table>
+
+</div>
+<div>
+    <ul id="nav">
+        <li><a href="/">Home</a></li>
+        <li><a href="/login">Login</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+</div>
+</body>
+</html>
